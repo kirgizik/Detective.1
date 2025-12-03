@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детектив в Темноте</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ГЛАВНОЕ МЕНЮ */
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            position: relative;
+            padding: 2rem;
+        }
+
+        .game-title {
+            font-size: 5rem;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.6);
+            background: linear-gradient(45deg, #ff6b6b, #ffa500, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 3rem;
+            font-weight: bold;
+        }
+
+        .coins-display {
+            font-size: 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 2rem;
+        }
+
+        .menu-button {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            font-size: 1.3rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-button.start {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .menu-button.achievements {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+        }
+
+        .menu-button.shop {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+        }
+
+        .bottom-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .round-button {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            font-size: 2.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .round-button:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ОСТАЛЬНЫЕ СТИЛИ */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 90%;
+            margin: 1rem;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+        }
+
+        .settings {
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .setting-item {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #ffd700;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .game-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+        }
+
+        .timer {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .timer.low-time {
+            color: #ff6b6b;
+            animation: pulse 0.8s infinite;
+        }
+
+        .target {
+            font-size: 1.3rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .target-emoji {
+            font-size: 2rem;
+            display: block;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .level {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .coins-counter {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .loading {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .game-area {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ИНСТРУМЕНТЫ ПОИСКА */
+        .search-tool {
+            position: absolute;
+            pointer-events: none;
+            z-index: 10;
+            transition: transform 0.1s ease;
+        }
+
+        .flashlight-beam {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0.2) 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            filter: blur(5px);
+        }
+
+        .chinese-lantern-beam {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(255, 100, 100, 0.4) 0%,
+                rgba(255, 80, 80, 0.3) 30%,
+                rgba(255, 60, 60, 0.2) 50%,
+                transparent 70%
+            );
+            filter: blur(6px);
+        }
+
+        .magnifier-beam {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(255, 255, 255, 0.4) 0%,
+                rgba(255, 255, 255, 0.3) 40%,
+                rgba(255, 255, 255, 0.2) 60%,
+                transparent 80%
+            );
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            filter: none;
+        }
+
+        .candle-beam {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(255, 200, 50, 0.25) 0%,
+                rgba(255, 180, 50, 0.15) 20%,
+                rgba(255, 160, 50, 0.08) 40%,
+                transparent 60%
+            );
+            filter: blur(8px) brightness(0.8);
+            opacity: 0.7;
+        }
+
+        .brush-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+        }
+
+        .brush-beam {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(100, 200, 255, 0.1) 0%,
+                rgba(100, 200, 255, 0.05) 30%,
+                transparent 50%
+            );
+            border: 1px dashed rgba(100, 200, 255, 0.3);
+            animation: brushClean 2s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        .bubble {
+            position: absolute;
+            font-size: 1rem;
+            opacity: 0;
+            animation: bubbleFloat 2s ease-in forwards;
+            z-index: 20;
+        }
+
+        @keyframes brushClean {
+            0%, 100% { 
+                transform: rotate(-10deg) scale(1);
+                opacity: 0.6;
+            }
+            25% { 
+                transform: rotate(5deg) scale(1.1);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: rotate(-5deg) scale(0.9);
+                opacity: 0.7;
+            }
+            75% { 
+                transform: rotate(10deg) scale(1.05);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes bubbleFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-20px) scale(1.1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px) scale(1.2);
+            }
+        }
+
+        .tool-icon {
+            position: absolute;
+            font-size: 1.5rem;
+            z-index: 15;
+            pointer-events: none;
+            filter: drop-shadow(0 0 5px yellow);
+        }
+
+        .emoji {
+            position: absolute;
+            z-index: 5;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            transform-origin: center;
+        }
+
+        .emoji.visible {
+            opacity: 1;
+        }
+
+        .emoji.highlighted {
+            animation: highlightPulse 1.5s ease-in-out infinite;
+            opacity: 1 !important;
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% { 
+                transform: scale(1);
+                filter: drop-shadow(0 0 3px cyan);
+            }
+            50% { 
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 10px cyan);
+            }
+        }
+
+        .left-handed .tool-icon {
+            transform: scaleX(-1);
+            left: -25px;
+        }
+
+        .right-handed .tool-icon {
+            right: -25px;
+        }
+
+        .pause-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .pause-content {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .game-type-indicator {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            z-index: 101;
+            text-align: center;
+        }
+
+        .item-found {
+            animation: itemFound 0.8s ease-out forwards;
+            z-index: 100;
+        }
+
+        @keyframes itemFound {
+            0% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+            100% { 
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        .detection-zone {
+            position: absolute;
+            border: 2px solid rgba(0, 255, 0, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            display: none;
+        }
+
+        /* ДОСТИЖЕНИЯ */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .achievement {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            border: 2px solid #666;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .achievement.locked {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+        }
+
+        .achievement.unlocked {
+            border-color: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+        }
+
+        .achievement-icon {
+            font-size: 2.5rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .achievement-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .achievement-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 0.3rem;
+        }
+
+        .achievement-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* МАГАЗИН */
+        .shop-categories {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .category-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .category-btn.active {
+            background: rgba(52, 152, 219, 0.3);
+            border-color: #3498db;
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .shop-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            border: 2px solid #666;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .shop-item.owned {
+            border-color: #2ecc71;
+            opacity: 0.7;
+        }
+
+        .shop-item.can-afford {
+            border-color: #3498db;
+            cursor: pointer;
+        }
+
+        .shop-item.can-afford:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .shop-item.cannot-afford {
+            border-color: #666;
+            opacity: 0.5;
+        }
+
+        .shop-icon {
+            font-size: 2.5rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .shop-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .shop-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 0.3rem;
+        }
+
+        .shop-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .shop-price {
+            font-size: 1rem;
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ЯЗЫКИ */
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .language-option.selected {
+            background: rgba(52, 152, 219, 0.3);
+            border: 1px solid #3498db;
+        }
+
+        .language-flag {
+            font-size: 1.5rem;
+            min-width: 30px;
+        }
+
+        .language-name {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .language-code {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .hieroglyph {
+            font-family: 'Segoe UI Symbol', sans-serif;
+        }
+
+        .pig-language {
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* ОКНО ПОМОЩИ */
+        .help-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .help-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .help-content h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #ffa500;
+        }
+
+        .help-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .help-section h3 {
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+
+        .help-section p {
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        /* НОВЫЕ СТИЛИ ДЛЯ ИЗМЕНЕНИЙ */
+        .emoji.detecting {
+            animation: detectingPulse 0.5s ease-in-out;
+        }
+
+        @keyframes detectingPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .detection-timer {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            z-index: 6;
+            white-space: nowrap;
+        }
+
+        /* УВЕЛИЧЕННОЕ ОКНО НАСТРОЕК */
+        .settings-container {
+            max-width: 95%;
+            max-height: 85%;
+            overflow-y: auto;
+        }
+
+        /* УБРАТЬ ИНСТРУКЦИЮ С ИГРОВОГО ПОЛЯ */
+        .instructions {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Главное меню -->
+    <div id="startScreen" class="screen">
+        <div class="main-menu">
+            <div class="game-title" id="gameTitle">🕵️ Детектив в Темноте</div>
+            
+            <div class="coins-display">
+                <span>🪙</span>
+                <span id="totalCoins">0</span>
+            </div>
+            
+            <div class="menu-buttons">
+                <button class="menu-button start" id="startButton">Начать игру</button>
+                <button class="menu-button achievements" id="achievementsButton">Достижения</button>
+                <button class="menu-button shop" id="shopButton">Дополнительно</button>
+            </div>
+            
+            <div class="bottom-buttons">
+                <button class="round-button" id="helpButton">❓</button>
+                <button class="round-button" id="settingsButton">⚙️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран настроек -->
+    <div id="settingsScreen" class="screen hidden">
+        <div class="container settings-container">
+            <h1>⚙️ Настройки</h1>
+            
+            <div class="settings">
+                <div class="setting-item">
+                    <span class="setting-label">Рука для управления:</span>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="hand" value="right" checked>
+                            <span>Правша 🔍</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="hand" value="left">
+                            <span>Левша 🔎</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <span class="setting-label">Тип фонарика:</span>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="flashlight" value="human" checked>
+                            <span>Для людей 🔦</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="flashlight" value="chinese">
+                            <span>Для китайцев 🏮</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <span class="setting-label">Язык:</span>
+                    <div class="language-list">
+                        <div class="language-option selected" data-lang="ru">
+                            <span class="language-flag">🇷🇺</span>
+                            <span class="language-name">Русский</span>
+                            <span class="language-code">RU</span>
+                        </div>
+                        <div class="language-option" data-lang="ua">
+                            <span class="language-flag">🇺🇦</span>
+                            <span class="language-name pig-language">🐖🐖🐖🐖🐖🐖</span>
+                            <span class="language-code pig-language">🐖🐖</span>
+                        </div>
+                        <div class="language-option hieroglyph" data-lang="hieroglyph">
+                            <span class="language-flag">𓁹𓂀𓀠</span>
+                            <span class="language-name">𓂧𓂋𓆑𓏏𓊖</span>
+                            <span class="language-code">𓂧𓂋𓆑𓏏𓊖</span>
+                        </div>
+                        <div class="language-option" data-lang="klingon">
+                            <span class="language-flag">🛸</span>
+                            <span class="language-name">tlhIngan Hol</span>
+                            <span class="language-code">tlhIngan</span>
+                        </div>
+                        <div class="language-option" data-lang="enochian">
+                            <span class="language-flag">👁️</span>
+                            <span class="language-name">ENOCHIAN</span>
+                            <span class="language-code">ENCH</span>
+                        </div>
+                        <div class="language-option" data-lang="sith">
+                            <span class="language-flag">⚡</span>
+                            <span class="language-name">UR-KITTĀT</span>
+                            <span class="language-code">UR-KITTĀT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <button id="backButton" class="btn" style="padding: 15px 40px; font-size: 1.2rem;">Назад</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Окно помощи -->
+    <div id="helpScreen" class="screen hidden">
+        <div class="help-overlay">
+            <div class="help-content">
+                <h2>❓ Как играть</h2>
+                
+                <div class="help-section">
+                    <h3>🎯 Цель игры</h3>
+                    <p>Найдите нужный предмет в темноте за 60 секунд!</p>
+                    <p>Используйте разные инструменты для поиска скрытых эмодзи.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>👆 Управление</h3>
+                    <p>• Водите пальцем по экрану чтобы двигать инструмент</p>
+                    <p>• Найдите целевой эмодзи чтобы перейти на следующий уровень</p>
+                    <p>• <strong>Двойное нажатие</strong> - пауза игры</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>💰 Жыркоины</h3>
+                    <p>• За каждый найденный предмет: <strong>10🪙</strong></p>
+                    <p>• Копите жыркоины для покупок в магазине!</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>🛠️ Инструменты</h3>
+                    <p>• <strong>🔦 Фонарик</strong> - обычное освещение</p>
+                    <p>• <strong>🔍 Лупа</strong> - четкий круг</p>
+                    <p>• <strong>🕯️ Свеча</strong> - слабое желтое освещение</p>
+                    <p>• <strong>🪥 Кисть</strong> - подсветка предметов</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>🕐 Обнаружение предметов</h3>
+                    <p>• Предмет нужно удерживать в свете <strong>0.5 секунды</strong></p>
+                    <p>• Достаточно осветить хотя бы половину предмета</p>
+                    <p>• Таймер показывает прогресс обнаружения</p>
+                    <p>• Только после полного таймера предмет считается найденным</p>
+                </div>
+
+                <button id="closeHelpButton" class="btn" style="margin-top: 1rem; padding: 12px 40px; font-size: 1.1rem;">Понятно!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Достижения -->
+    <div id="achievementsScreen" class="screen hidden">
+        <div class="container">
+            <h1>🏆 Достижения</h1>
+            <div class="achievements-grid" id="achievementsGrid">
+                <!-- Достижения будут добавляться через JavaScript -->
+            </div>
+            <button id="backFromAchievements" class="btn">Назад</button>
+        </div>
+    </div>
+
+    <!-- Магазин -->
+    <div id="shopScreen" class="screen hidden">
+        <div class="container">
+            <h1>🛒 Дополнительно</h1>
+            <div class="coins-display" style="margin-bottom: 1.5rem; font-size: 1.5rem; padding: 10px 20px;">
+                <span>🪙</span>
+                <span id="shopCoins">0</span>
+            </div>
+            
+            <div class="shop-categories">
+                <button class="category-btn active" data-category="appearance">Названия</button>
+                <button class="category-btn" data-category="upgrades">Улучшения</button>
+            </div>
+            
+            <div class="shop-grid" id="shopGrid">
+                <!-- Товары будут добавляться через JavaScript -->
+            </div>
+            <button id="backFromShop" class="btn">Назад</button>
+        </div>
+    </div>
+
+    <!-- Игровой экран -->
+    <div id="gameScreen" class="screen hidden">
+        <div class="game-header">
+            <div class="timer" id="timer">60с</div>
+            <div class="target">
+                Цель: <span class="target-emoji" id="targetEmoji">🔍</span>
+            </div>
+            <div class="level">
+                Ур: <span id="level">1</span>
+            </div>
+            <div class="coins-counter">
+                <span>🪙</span>
+                <span id="coins">0</span>
+            </div>
+        </div>
+
+        <div class="game-type-indicator" id="gameTypeIndicator">🔦 Фонарик</div>
+        
+        <div id="gameArea" class="game-area">
+            <div class="detection-zone" id="detectionZone"></div>
+        </div>
+        
+        <div class="search-tool" id="searchTool">
+            <div class="flashlight-beam" id="toolBeam"></div>
+            <div class="tool-icon" id="toolIcon">🔦</div>
+        </div>
+
+        <div id="pauseScreen" class="pause-overlay hidden">
+            <div class="pause-content">
+                <h2>⏸️ Пауза</h2>
+                <p>Игра приостановлена</p>
+                <button id="resumeButton" class="btn">Продолжить</button>
+                <button id="quitButton" class="btn btn-secondary">Выйти в меню</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран результатов -->
+    <div id="resultScreen" class="screen hidden">
+        <div class="container">
+            <h1>Игра завершена!</h1>
+            <p id="resultMessage"></p>
+            <p>Заработано: <span id="earnedCoins">0</span>🪙</p>
+            <button id="restartButton" class="btn">Играть снова</button>
+            <button id="menuButton" class="btn btn-secondary">Меню</button>
+        </div>
+    </div>
+
+    <script>
+        // ЭЛЕМЕНТЫ ИГРЫ
+        const startScreen = document.getElementById('startScreen');
+        const settingsScreen = document.getElementById('settingsScreen');
+        const helpScreen = document.getElementById('helpScreen');
+        const achievementsScreen = document.getElementById('achievementsScreen');
+        const shopScreen = document.getElementById('shopScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const pauseScreen = document.getElementById('pauseScreen');
+        
+        const startButton = document.getElementById('startButton');
+        const settingsButton = document.getElementById('settingsButton');
+        const helpButton = document.getElementById('helpButton');
+        const achievementsButton = document.getElementById('achievementsButton');
+        const shopButton = document.getElementById('shopButton');
+        const closeHelpButton = document.getElementById('closeHelpButton');
+        const backButton = document.getElementById('backButton');
+        const backFromAchievements = document.getElementById('backFromAchievements');
+        const backFromShop = document.getElementById('backFromShop');
+        const restartButton = document.getElementById('restartButton');
+        const menuButton = document.getElementById('menuButton');
+        const resumeButton = document.getElementById('resumeButton');
+        const quitButton = document.getElementById('quitButton');
+        const gameTitle = document.getElementById('gameTitle');
+        
+        const gameArea = document.getElementById('gameArea');
+        const timerElement = document.getElementById('timer');
+        const targetEmoji = document.getElementById('targetEmoji');
+        const levelElement = document.getElementById('level');
+        const coinsElement = document.getElementById('coins');
+        const totalCoinsElement = document.getElementById('totalCoins');
+        const shopCoinsElement = document.getElementById('shopCoins');
+        const earnedCoinsElement = document.getElementById('earnedCoins');
+        const gameTypeIndicator = document.getElementById('gameTypeIndicator');
+        const resultMessage = document.getElementById('resultMessage');
+        const searchTool = document.getElementById('searchTool');
+        const toolBeam = document.getElementById('toolBeam');
+        const toolIcon = document.getElementById('toolIcon');
+        const detectionZone = document.getElementById('detectionZone');
+        const achievementsGrid = document.getElementById('achievementsGrid');
+        const shopGrid = document.getElementById('shopGrid');
+
+        // НАСТРОЙКИ ИГРЫ
+        const gameTime = 60; // Изменено с 30 на 60 секунд
+        let timeLeft = gameTime;
+        let currentLevel = 1;
+        let gameTimer;
+        let isGameRunning = false;
+        let isPaused = false;
+        let currentTarget = '';
+        let emojis = [];
+        let currentTool = 'flashlight';
+        let brushBubbles = [];
+        let lastBrushTime = 0;
+        let itemFound = false;
+        let coins = 0;
+        let totalCoins = 0;
+        let lastTapTime = 0;
+        let garlicFound = false;
+        let activeUpgrades = {
+            flashlightBoost: false,
+            magnet: false
+        };
+
+        // НОВЫЕ ПЕРЕМЕННЫЕ ДЛЯ ЗАДЕРЖКИ ОБНАРУЖЕНИЯ
+        let detectionTimers = new Map(); // Хранит таймеры обнаружения для каждого эмодзи
+        const DETECTION_DELAY = 500; // 0.5 секунды задержки
+
+        // НАСТРОЙКИ ПОЛЬЗОВАТЕЛЯ
+        let settings = {
+            hand: 'right',
+            flashlight: 'human',
+            language: 'ru',
+            character: '🕵️',
+            gameTitle: 'Детектив в Темноте'
+        };
+
+        // ДОСТИЖЕНИЯ
+        const achievements = [
+            {
+                id: 'speedster',
+                name: 'Ну ты скорострел😮',
+                description: 'Достичь 8 уровня за 60 секунд',
+                icon: '💦',
+                unlocked: false,
+                condition: (gameData) => gameData.level >= 8 && gameData.timeLeft > 0
+            },
+            {
+                id: 'garlic',
+                name: 'Фу🤢',
+                description: 'Найти чеснок',
+                icon: '🧄',
+                unlocked: false,
+                condition: (gameData) => gameData.garlicFound
+            }
+        ];
+
+        // МАГАЗИН - ИСПРАВЛЕНО: ВСЕ НАЗВАНИЯ БЕСПЛАТНЫ
+        const shopItems = [
+            // Оформление - ВСЕ НАЗВАНИЯ БЕСПЛАТНЫ
+            {
+                id: 'detective',
+                name: '🕵️ Детектив',
+                description: 'Начальное название',
+                icon: '🕵️',
+                price: 0,
+                owned: true,
+                type: 'appearance',
+                category: 'appearance'
+            },
+            {
+                id: 'pregnant',
+                name: '🫄 Дагестанец',
+                description: 'Дагестанец в Темноте',
+                icon: '🫄',
+                price: 0,
+                owned: true,
+                type: 'appearance',
+                category: 'appearance'
+            },
+            {
+                id: 'pig',
+                name: '🐖 Жир',
+                description: 'Жир в Темноте',
+                icon: '🐖',
+                price: 0,
+                owned: true,
+                type: 'appearance',
+                category: 'appearance'
+            },
+            {
+                id: 'ginger',
+                name: '🫚 Имбирь',
+                description: 'Имбирь в Темноте',
+                icon: '🫚',
+                price: 0,
+                owned: true,
+                type: 'appearance',
+                category: 'appearance'
+            },
+            // Улучшения - ПЛАТНЫЕ
+            {
+                id: 'flashlight_pro',
+                name: '💡 Увеличение радиуса',
+                description: 'Увеличивает радиус на 20 секунд',
+                icon: '💡',
+                price: 200,
+                owned: false,
+                type: 'upgrade',
+                category: 'upgrades'
+            },
+            {
+                id: 'magnet',
+                name: '🧲 Магнит для цели',
+                description: 'Притягивает цель к центру',
+                icon: '🧲',
+                price: 180,
+                owned: false,
+                type: 'upgrade',
+                category: 'upgrades'
+            }
+        ];
+
+        // СИСТЕМА ПРЕДМЕТОВ ДЛЯ ПОИСКА
+        const searchItems = {
+            common: ['🔑', '💎', '📱', '💍', '🔫', '💰', '📜', '🎭'],
+            rare: ['⚰️', '🕵️', '🧩', '🎯', '🏆', '⭐', '🔔', '🎪'],
+            special: ['🎲', '👑', '💼', '🗝️', '👻', '👽', '🤖', '🎃'],
+            unique: ['💀', '👾', '🦇', '🍭', '🎁', '💣', '🚀', '🌈'],
+            legendary: ['🎨', '⚡', '🔥', '💧', '🌪️', '❄️', '🌙', '☀️']
+        };
+
+        // РАДИУСЫ ОБНАРУЖЕНИЯ (увеличена свеча)
+        const detectionRadii = {
+            flashlight: 40,
+            magnifier: 35,  
+            candle: 35, // Увеличено с 30 до 35
+            brush: 45
+        };
+
+        // МИНИМАЛЬНАЯ ЧАСТЬ ЭМОДЗИ ДЛЯ ОБНАРУЖЕНИЯ (50%)
+        const MIN_DETECTION_PERCENT = 0.5;
+
+        // ОБРАБОТЧИКИ СОБЫТИЙ ГЛАВНОГО МЕНЮ
+        startButton.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            startGame();
+        });
+
+        settingsButton.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        });
+
+        helpButton.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            helpScreen.classList.remove('hidden');
+        });
+
+        achievementsButton.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            achievementsScreen.classList.remove('hidden');
+            updateAchievementsDisplay();
+        });
+
+        shopButton.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            shopScreen.classList.remove('hidden');
+            updateShopDisplay();
+        });
+
+        closeHelpButton.addEventListener('click', () => {
+            helpScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        });
+
+        backButton.addEventListener('click', () => {
+            settingsScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        });
+
+        backFromAchievements.addEventListener('click', () => {
+            achievementsScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        });
+
+        backFromShop.addEventListener('click', () => {
+            shopScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        });
+
+        restartButton.addEventListener('click', startGame);
+        
+        menuButton.addEventListener('click', () => {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        });
+
+        resumeButton.addEventListener('click', resumeGame);
+        
+        quitButton.addEventListener('click', () => {
+            pauseScreen.classList.add('hidden');
+            gameScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            isGameRunning = false;
+            clearInterval(gameTimer);
+        });
+
+        // ОБРАБОТЧИКИ КАТЕГОРИЙ МАГАЗИНА
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const category = this.dataset.category;
+                updateShopDisplay(category);
+            });
+        });
+
+        // ОБРАБОТЧИКИ ЯЗЫКОВ - ИСПРАВЛЕНО
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.language-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                const lang = this.dataset.lang;
+                settings.language = lang;
+                updateLanguage();
+                saveGameData();
+            });
+        });
+
+        // ФУНКЦИЯ ДЛЯ ЗАМЕНЫ ТЕКСТА НА СВИНОК
+        function textToPigs(text) {
+            return text.split('').map(char => {
+                if (char === ' ' || char === ':' || char === '~' || char === '(' || char === ')' || 
+                    char === '.' || char === ',' || char === '!' || char === '?' || 
+                    char.match(/[0-9]/)) {
+                    return char;
+                }
+                return '🐖';
+            }).join('');
+        }
+
+        // ОБНОВЛЕНИЕ ЯЗЫКА - ИСПРАВЛЕНО
+        function updateLanguage() {
+            console.log('Обновление языка на:', settings.language);
+            
+            if (settings.language === 'ua') {
+                // Для свиного языка
+                gameTitle.textContent = textToPigs(settings.character + ' ' + settings.gameTitle);
+            } else if (settings.language === 'hieroglyph') {
+                // Для иероглифов
+                gameTitle.textContent = '𓁹𓂀𓀠 𓂧𓂋𓆑𓏏𓊖';
+            } else if (settings.language === 'klingon') {
+                // Клингонский
+                gameTitle.textContent = '🛸 tlhIngan Hol';
+            } else if (settings.language === 'enochian') {
+                // Енохианский
+                gameTitle.textContent = '👁️ ENOCHIAN';
+            } else if (settings.language === 'sith') {
+                // Ситхский
+                gameTitle.textContent = '⚡ UR-KITTĀT';
+            } else {
+                // Русский (по умолчанию)
+                gameTitle.textContent = settings.character + ' ' + settings.gameTitle;
+            }
+        }
+
+        // ЗАГРУЗКА НАСТРОЕК
+        function loadSettings() {
+            const handSetting = document.querySelector('input[name="hand"]:checked');
+            const flashlightSetting = document.querySelector('input[name="flashlight"]:checked');
+            
+            if (handSetting) settings.hand = handSetting.value;
+            if (flashlightSetting) settings.flashlight = flashlightSetting.value;
+            
+            updateToolAppearance();
+        }
+
+        // ОБНОВЛЕНИЕ ИНСТРУМЕНТА
+        function updateToolAppearance() {
+            searchTool.className = 'search-tool';
+            toolBeam.innerHTML = '';
+            toolBeam.className = '';
+            
+            const toolNames = {
+                flashlight: { 
+                    name: 'Фонарик', 
+                    icon: settings.flashlight === 'chinese' ? '🏮' : '🔦', 
+                    beam: settings.flashlight === 'chinese' ? 'chinese-lantern-beam' : 'flashlight-beam' 
+                },
+                magnifier: { name: 'Лупа', icon: '🔍', beam: 'magnifier-beam' },
+                candle: { name: 'Свеча', icon: '🕯️', beam: 'candle-beam' },
+                brush: { name: 'Кисть', icon: '🪥', beam: 'brush-container' }
+            };
+            
+            const tool = toolNames[currentTool];
+            
+            if (currentTool === 'brush') {
+                const brushContainer = document.createElement('div');
+                brushContainer.className = 'brush-container';
+                brushContainer.innerHTML = '<div class="brush-beam"></div>';
+                toolBeam.appendChild(brushContainer);
+            } else {
+                toolBeam.classList.add(tool.beam);
+            }
+            
+            toolIcon.textContent = tool.icon;
+            gameTypeIndicator.textContent = `${tool.icon} ${tool.name}`;
+            
+            if (settings.hand === 'left') {
+                searchTool.classList.add('left-handed');
+            } else {
+                searchTool.classList.add('right-handed');
+            }
+            
+            updateDetectionZone();
+        }
+
+        // ОБНОВЛЕНИЕ ЗОНЫ ОБНАРУЖЕНИЯ
+        function updateDetectionZone() {
+            let radius = detectionRadii[currentTool];
+            
+            // Увеличение радиуса при активном улучшении
+            if (activeUpgrades.flashlightBoost) {
+                radius = Math.floor(radius * 1.5);
+            }
+            
+            detectionZone.style.width = radius * 2 + 'px';
+            detectionZone.style.height = radius * 2 + 'px';
+        }
+
+        // ПАУЗА ПРИ ДВОЙНОМ НАЖАТИИ
+        function handleDoubleTap() {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+            
+            if (tapLength < 500 && tapLength > 0) {
+                if (isPaused) {
+                    resumeGame();
+                } else {
+                    pauseGame();
+                }
+            }
+            lastTapTime = currentTime;
+        }
+
+        // ПАУЗА И ПРОДОЛЖЕНИЕ
+        function pauseGame() {
+            isPaused = true;
+            isGameRunning = false;
+            clearInterval(gameTimer);
+            pauseScreen.classList.remove('hidden');
+        }
+
+        function resumeGame() {
+            isPaused = false;
+            isGameRunning = true;
+            pauseScreen.classList.add('hidden');
+            startTimer();
+        }
+
+        // ОБРАБОТКА КАСАНИЙ
+        let isTouching = false;
+
+        gameArea.addEventListener('touchstart', (e) => {
+            if (isPaused || itemFound) return;
+            e.preventDefault();
+            isTouching = true;
+            
+            handleDoubleTap();
+            
+            moveSearchTool(e.touches[0]);
+        });
+
+        gameArea.addEventListener('touchmove', (e) => {
+            if (isPaused || itemFound) return;
+            e.preventDefault();
+            if (isTouching && e.touches[0]) {
+                moveSearchTool(e.touches[0]);
+                
+                if (currentTool === 'brush') {
+                    createBrushBubbles(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            }
+        });
+
+        gameArea.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            isTouching = false;
+        });
+
+        // ДВИЖЕНИЕ ИНСТРУМЕНТА
+        function moveSearchTool(touch) {
+            if (!isGameRunning) return;
+            
+            const x = touch.clientX - 60;
+            const y = touch.clientY - 60;
+            
+            searchTool.style.left = x + 'px';
+            searchTool.style.top = y + 'px';
+            
+            detectionZone.style.left = (touch.clientX - detectionRadii[currentTool]) + 'px';
+            detectionZone.style.top = (touch.clientY - detectionRadii[currentTool]) + 'px';
+            detectionZone.style.display = 'block';
+            
+            checkEmojiDetection(touch.clientX, touch.clientY);
+        }
+
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ: ПРОВЕРКА ОБНАРУЖЕНИЯ ЭМОДЗИ С ЗАДЕРЖКОЙ
+        function checkEmojiDetection(centerX, centerY) {
+            if (itemFound) return;
+            
+            let detectionRadius = detectionRadii[currentTool];
+            
+            // Увеличение радиуса при активном улучшении
+            if (activeUpgrades.flashlightBoost) {
+                detectionRadius = Math.floor(detectionRadius * 1.5);
+            }
+            
+            emojis.forEach(emoji => {
+                const rect = emoji.getBoundingClientRect();
+                const emojiX = rect.left + rect.width / 2;
+                const emojiY = rect.top + rect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(emojiX - centerX, 2) + 
+                    Math.pow(emojiY - centerY, 2)
+                );
+                
+                // Вычисляем радиус эмодзи
+                const emojiRadius = Math.max(rect.width, rect.height) / 2;
+                
+                // Проверка, находится ли эмодзи в зоне обнаружения
+                // Теперь достаточно чтобы хотя бы 50% эмодзи было в зоне
+                const overlap = detectionRadius + emojiRadius - distance;
+                const isEnoughOverlap = overlap >= emojiRadius * MIN_DETECTION_PERCENT;
+                
+                if (distance < detectionRadius + emojiRadius && isEnoughOverlap) {
+                    // Эмодзи достаточно в зоне обнаружения
+                    emoji.classList.add('visible');
+                    
+                    // Если это целевой эмодзи
+                    if (emoji.textContent === currentTarget) {
+                        if (!detectionTimers.has(emoji)) {
+                            // Начинаем таймер обнаружения
+                            startDetectionTimer(emoji, centerX, centerY);
+                        }
+                    }
+                    
+                    // Проверка на чеснок
+                    if (emoji.textContent === '🧄') {
+                        garlicFound = true;
+                        unlockAchievement('garlic');
+                    }
+                } else {
+                    // Эмодзи недостаточно в зоне обнаружения
+                    emoji.classList.remove('visible');
+                    emoji.classList.remove('highlighted');
+                    resetDetectionTimer(emoji);
+                }
+                
+                // Притягивание цели магнитом
+                if (activeUpgrades.magnet && emoji.textContent === currentTarget) {
+                    const targetX = centerX - rect.width / 2;
+                    const targetY = centerY - rect.height / 2;
+                    
+                    // Плавное движение к центру
+                    const currentX = parseFloat(emoji.style.left);
+                    const currentY = parseFloat(emoji.style.top);
+                    
+                    emoji.style.left = (currentX + (targetX - currentX) * 0.1) + 'px';
+                    emoji.style.top = (currentY + (targetY - currentY) * 0.1) + 'px';
+                }
+            });
+        }
+
+        // НОВАЯ ФУНКЦИЯ: ЗАПУСК ТАЙМЕРА ОБНАРУЖЕНИЯ
+        function startDetectionTimer(emoji, centerX, centerY) {
+            // Удаляем старый таймер, если есть
+            resetDetectionTimer(emoji);
+            
+            // Создаем элемент таймера
+            let timerElement = emoji.querySelector('.detection-timer');
+            if (!timerElement) {
+                timerElement = document.createElement('div');
+                timerElement.className = 'detection-timer';
+                emoji.appendChild(timerElement);
+            }
+            
+            let progress = 0;
+            const startTime = Date.now();
+            
+            // Запускаем таймер
+            const timerId = setInterval(() => {
+                if (!isGameRunning || isPaused || itemFound) {
+                    clearInterval(timerId);
+                    detectionTimers.delete(emoji);
+                    return;
+                }
+                
+                const elapsed = Date.now() - startTime;
+                progress = (elapsed / DETECTION_DELAY) * 100;
+                
+                // Обновляем отображение таймера
+                timerElement.textContent = `${Math.round(progress)}%`;
+                timerElement.style.color = progress < 50 ? '#ffd700' : 
+                                         progress < 80 ? '#ffa500' : '#ff6b6b';
+                
+                // Добавляем анимацию обнаружения
+                emoji.classList.add('detecting');
+                
+                // Когда таймер завершен
+                if (progress >= 100) {
+                    clearInterval(timerId);
+                    detectionTimers.delete(emoji);
+                    
+                    // Убираем таймер
+                    if (timerElement.parentNode) {
+                        timerElement.parentNode.removeChild(timerElement);
+                    }
+                    
+                    // Находим целевой предмет
+                    if (!itemFound && emoji.textContent === currentTarget) {
+                        itemFound = true;
+                        foundTargetItem(emoji);
+                    }
+                }
+            }, 50); // Обновляем каждые 50мс
+            
+            // Сохраняем ID таймера
+            detectionTimers.set(emoji, timerId);
+        }
+
+        // НОВАЯ ФУНКЦИЯ: СБРОС ТАЙМЕРА ОБНАРУЖЕНИЯ
+        function resetDetectionTimer(emoji) {
+            if (detectionTimers.has(emoji)) {
+                clearInterval(detectionTimers.get(emoji));
+                detectionTimers.delete(emoji);
+                
+                // Убираем элемент таймера
+                const timerElement = emoji.querySelector('.detection-timer');
+                if (timerElement && timerElement.parentNode) {
+                    timerElement.parentNode.removeChild(timerElement);
+                }
+                
+                // Убираем анимацию обнаружения
+                emoji.classList.remove('detecting');
+            }
+        }
+
+        // СОЗДАНИЕ ПУЗЫРЕЙ ДЛЯ КИСТКИ
+        function createBrushBubbles(x, y) {
+            const now = Date.now();
+            if (now - lastBrushTime < 150) return;
+            
+            lastBrushTime = now;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.textContent = '🫧';
+            bubble.style.left = (x - 10 + Math.random() * 20) + 'px';
+            bubble.style.top = (y - 10 + Math.random() * 20) + 'px';
+            bubble.style.fontSize = (0.6 + Math.random() * 0.4) + 'rem';
+            
+            gameArea.appendChild(bubble);
+            brushBubbles.push(bubble);
+            
+            setTimeout(() => {
+                if (bubble.parentNode) {
+                    bubble.parentNode.removeChild(bubble);
+                }
+                brushBubbles = brushBubbles.filter(b => b !== bubble);
+            }, 2000);
+        }
+
+        // НАЧАЛО ИГРЫ
+        function startGame() {
+            loadSettings();
+            
+            startScreen.classList.add('hidden');
+            settingsScreen.classList.add('hidden');
+            helpScreen.classList.add('hidden');
+            achievementsScreen.classList.add('hidden');
+            shopScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            pauseScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            
+            timeLeft = gameTime;
+            currentLevel = 1;
+            isGameRunning = true;
+            isPaused = false;
+            itemFound = false;
+            coins = 0;
+            garlicFound = false;
+            
+            // Сброс улучшений
+            activeUpgrades.flashlightBoost = false;
+            activeUpgrades.magnet = false;
+            
+            // Очищаем все таймеры обнаружения
+            detectionTimers.forEach(timerId => clearInterval(timerId));
+            detectionTimers.clear();
+            
+            timerElement.textContent = `${timeLeft}с`;
+            timerElement.classList.remove('low-time');
+            levelElement.textContent = currentLevel;
+            coinsElement.textContent = '0';
+            
+            gameArea.innerHTML = '<div class="detection-zone" id="detectionZone"></div>';
+            emojis = [];
+            brushBubbles = [];
+            
+            detectionZone.style.display = 'none';
+            
+            generateLevel();
+            startTimer();
+        }
+
+        // ГЕНЕРАЦИЯ УРОВНЯ
+        function generateLevel() {
+            const emojiElements = gameArea.querySelectorAll('.emoji, .bubble');
+            emojiElements.forEach(el => el.remove());
+            emojis = [];
+            
+            // Очищаем все таймеры обнаружения
+            detectionTimers.forEach(timerId => clearInterval(timerId));
+            detectionTimers.clear();
+            
+            const itemTypes = Object.keys(searchItems);
+            const randomType = itemTypes[Math.floor(Math.random() * itemTypes.length)];
+            let availableItems = [...searchItems[randomType]];
+            
+            // Случайное добавление чеснока (1 шанс из 8)
+            if (Math.random() < 0.125) {
+                availableItems.push('🧄');
+            }
+            
+            currentTarget = availableItems[Math.floor(Math.random() * availableItems.length)];
+            targetEmoji.textContent = currentTarget;
+            
+            const usedPositions = [];
+            const itemCount = 5 + Math.floor(currentLevel / 2);
+            
+            for (let i = 0; i < itemCount; i++) {
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji';
+                
+                const size = Math.max(1.8, 2.5 - currentLevel * 0.1) + 'rem';
+                emoji.style.fontSize = size;
+                
+                let item;
+                if (i === 0) {
+                    item = currentTarget;
+                } else {
+                    let attempts = 0;
+                    do {
+                        item = availableItems[Math.floor(Math.random() * availableItems.length)];
+                        attempts++;
+                    } while (item === currentTarget && attempts < 10);
+                }
+                
+                emoji.textContent = item;
+                
+                let x, y;
+                let attempts = 0;
+                
+                do {
+                    x = 40 + Math.random() * (window.innerWidth - 120);
+                    y = 100 + 40 + Math.random() * (window.innerHeight - 180);
+                    attempts++;
+                } while (isTooClose(x, y, usedPositions) && attempts < 50);
+                
+                usedPositions.push({x, y});
+                
+                emoji.style.left = x + 'px';
+                emoji.style.top = y + 'px';
+                
+                gameArea.appendChild(emoji);
+                emojis.push(emoji);
+            }
+
+            // Смена инструмента каждый уровень
+            const tools = ['flashlight', 'magnifier', 'candle', 'brush'];
+            currentTool = tools[(currentLevel - 1) % tools.length];
+            updateToolAppearance();
+        }
+
+        function isTooClose(x, y, positions) {
+            for (const pos of positions) {
+                const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
+                if (distance < 80) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // НАЙДЕН ЦЕЛЕВОЙ ПРЕДМЕТ
+        function foundTargetItem(emoji) {
+            // Очищаем все таймеры обнаружения
+            detectionTimers.forEach(timerId => clearInterval(timerId));
+            detectionTimers.clear();
+            
+            emoji.classList.add('item-found');
+            detectionZone.style.display = 'none';
+            
+            // Добавляем жыркоины
+            coins += 10;
+            coinsElement.textContent = coins;
+            
+            setTimeout(() => {
+                itemFound = false;
+                currentLevel++;
+                levelElement.textContent = currentLevel;
+
+                // Проверка достижения "скорострел"
+                if (currentLevel >= 8 && timeLeft > 0) {
+                    unlockAchievement('speedster');
+                }
+                
+                generateLevel();
+            }, 800);
+        }
+
+        // РАЗБЛОКИРОВКА ДОСТИЖЕНИЯ
+        function unlockAchievement(achievementId) {
+            const achievement = achievements.find(a => a.id === achievementId);
+            if (achievement && !achievement.unlocked) {
+                achievement.unlocked = true;
+                saveGameData();
+                console.log(`Достижение разблокировано: ${achievement.name}`);
+            }
+        }
+
+        // ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ ДОСТИЖЕНИЙ
+        function updateAchievementsDisplay() {
+            achievementsGrid.innerHTML = '';
+            
+            achievements.forEach(achievement => {
+                const achievementElement = document.createElement('div');
+                achievementElement.className = `achievement ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+                
+                achievementElement.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-info">
+                        <div class="achievement-name">${achievement.name}</div>
+                        <div class="achievement-desc">${achievement.description}</div>
+                    </div>
+                `;
+                
+                achievementsGrid.appendChild(achievementElement);
+            });
+        }
+
+        // ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ МАГАЗИНА
+        function updateShopDisplay(category = 'appearance') {
+            shopGrid.innerHTML = '';
+            shopCoinsElement.textContent = totalCoins;
+            
+            const filteredItems = shopItems.filter(item => item.category === category);
+            
+            filteredItems.forEach(item => {
+                const shopItemElement = document.createElement('div');
+                let itemClass = 'shop-item';
+                
+                if (item.owned) {
+                    itemClass += ' owned';
+                } else if (totalCoins >= item.price) {
+                    itemClass += ' can-afford';
+                } else {
+                    itemClass += ' cannot-afford';
+                }
+                
+                shopItemElement.className = itemClass;
+                
+                // Скрываем цену для бесплатных названий
+                const priceHtml = item.price === 0 ? '' : 
+                    `<div class="shop-price">
+                        <span>🪙</span>
+                        <span>${item.price}</span>
+                    </div>`;
+                
+                shopItemElement.innerHTML = `
+                    <div class="shop-icon">${item.icon}</div>
+                    <div class="shop-info">
+                        <div class="shop-name">${item.name}</div>
+                        ${item.description ? `<div class="shop-desc">${item.description}</div>` : ''}
+                        ${priceHtml}
+                    </div>
+                `;
+                
+                if (!item.owned && (item.price === 0 || totalCoins >= item.price)) {
+                    shopItemElement.addEventListener('click', () => purchaseItem(item.id));
+                } else if (item.owned && item.type === 'appearance') {
+                    shopItemElement.addEventListener('click', () => purchaseItem(item.id));
+                }
+                
+                shopGrid.appendChild(shopItemElement);
+            });
+        }
+
+        // ПОКУПКА ПРЕДМЕТА - ИСПРАВЛЕНО ДЛЯ БЕСПЛАТНЫХ НАЗВАНИЙ
+        function purchaseItem(itemId) {
+            const item = shopItems.find(i => i.id === itemId);
+            if (!item) return;
+            
+            if (item.type === 'appearance') {
+                // Для названий - просто меняем настройки, даже если уже owned
+                settings.character = item.icon;
+                settings.gameTitle = getCharacterTitle(item.id);
+                updateLanguage();
+                
+                // Если еще не owned и это платно (хотя сейчас все бесплатно)
+                if (!item.owned && totalCoins >= item.price) {
+                    totalCoins -= item.price;
+                    item.owned = true;
+                }
+                
+                saveGameData();
+                updateShopDisplay();
+                totalCoinsElement.textContent = totalCoins;
+                
+            } else if (item.type === 'upgrade' && !item.owned && totalCoins >= item.price) {
+                // Для улучшений - стандартная логика
+                totalCoins -= item.price;
+                item.owned = true;
+                
+                activateUpgrade(item.id);
+                
+                saveGameData();
+                updateShopDisplay();
+                totalCoinsElement.textContent = totalCoins;
+            }
+        }
+
+        // АКТИВАЦИЯ УЛУЧШЕНИЯ
+        function activateUpgrade(upgradeId) {
+            if (upgradeId === 'flashlight_pro') {
+                activeUpgrades.flashlightBoost = true;
+                updateDetectionZone();
+                
+                // Улучшение действует 20 секунд
+                setTimeout(() => {
+                    activeUpgrades.flashlightBoost = false;
+                    updateDetectionZone();
+                }, 20000);
+                
+            } else if (upgradeId === 'magnet') {
+                activeUpgrades.magnet = true;
+            }
+        }
+
+        // ПОЛУЧЕНИЕ НАЗВАНИЯ ДЛЯ ПЕРСОНАЖА
+        function getCharacterTitle(characterId) {
+            const titles = {
+                'detective': 'Детектив в Темноте',
+                'pregnant': 'Дагестанец в Темноте',
+                'pig': 'Жир в Темноте', 
+                'ginger': 'Имбирь в Темноте'
+            };
+            return titles[characterId] || 'Детектив в Темноте';
+        }
+
+        // ТАЙМЕР
+        function startTimer() {
+            clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                if (!isPaused && isGameRunning) {
+                    timeLeft--;
+                    timerElement.textContent = `${timeLeft}с`;
+                    
+                    if (timeLeft <= 10) {
+                        timerElement.classList.add('low-time');
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }
+            }, 1000);
+        }
+
+        // КОНЕЦ ИГРЫ
+        function endGame() {
+            isGameRunning = false;
+            clearInterval(gameTimer);
+            
+            // Очищаем все таймеры обнаружения
+            detectionTimers.forEach(timerId => clearInterval(timerId));
+            detectionTimers.clear();
+            
+            // Сохраняем заработанные жыркоины
+            totalCoins += coins;
+            totalCoinsElement.textContent = totalCoins;
+            earnedCoinsElement.textContent = coins;
+            
+            saveGameData();
+            
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            const score = currentLevel - 1;
+            let message = `Вы прошли ${score} уровней! `;
+            
+            if (score <= 3) message += "Новичок-детектив!";
+            else if (score <= 7) message += "Опытный сыщик!";
+            else message += "Великий детектив!";
+            
+            resultMessage.textContent = message;
+        }
+
+        // ЗАГРУЗКА СОХРАНЕННЫХ ДАННЫХ
+        function loadGameData() {
+            const savedData = localStorage.getItem('detectiveGameData');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    totalCoins = data.totalCoins || 0;
+                    totalCoinsElement.textContent = totalCoins;
+                    
+                    // Загрузка достижений
+                    if (data.achievements) {
+                        data.achievements.forEach(savedAchievement => {
+                            const achievement = achievements.find(a => a.id === savedAchievement.id);
+                            if (achievement) {
+                                achievement.unlocked = savedAchievement.unlocked;
+                            }
+                        });
+                    }
+                    
+                    // Загрузка магазина
+                    if (data.shopItems) {
+                        data.shopItems.forEach(savedItem => {
+                            const item = shopItems.find(i => i.id === savedItem.id);
+                            if (item) {
+                                item.owned = savedItem.owned;
+                            }
+                        });
+                    }
+                    
+                    // Загрузка настроек
+                    if (data.settings) {
+                        settings = { ...settings, ...data.settings };
+                        
+                        // Восстанавливаем выбранный язык в настройках
+                        document.querySelectorAll('.language-option').forEach(opt => {
+                            if (opt.dataset.lang === settings.language) {
+                                opt.classList.add('selected');
+                            } else {
+                                opt.classList.remove('selected');
+                            }
+                        });
+                        
+                        updateLanguage();
+                    }
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                }
+            } else {
+                // При первом запуске делаем все названия бесплатными
+                shopItems.forEach(item => {
+                    if (item.category === 'appearance') {
+                        item.owned = true;
+                    }
+                });
+                saveGameData();
+            }
+        }
+
+        function saveGameData() {
+            const data = {
+                totalCoins: totalCoins,
+                achievements: achievements.map(a => ({ id: a.id, unlocked: a.unlocked })),
+                shopItems: shopItems.map(i => ({ id: i.id, owned: i.owned })),
+                settings: settings
+            };
+            localStorage.setItem('detectiveGameData', JSON.stringify(data));
+        }
+
+        // АДАПТАЦИЯ К РАЗМЕРУ ЭКРАНА
+        window.addEventListener('resize', () => {
+            if (isGameRunning) generateLevel();
+        });
+
+        // ИНИЦИАЛИЗАЦИЯ
+        loadGameData();
+        
+        window.addEventListener('beforeunload', saveGameData);
+
+        console.log('Игра загружена! Все функции работают');
+    </script>
+</body>
+</html>
